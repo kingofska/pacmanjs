@@ -1,0 +1,270 @@
+<!DOCTYPE html> 
+<html lang="en"> 
+	<head> 
+		<meta charset="UTF-8"> 
+		<title>24ways - CSS Animations - Transparent Spinner (alternative version)</title> 
+		<style type="text/css">
+			body {
+				background: black;
+			}
+
+			@-webkit-keyframes bodyBackground {
+				from {
+					background-color: #fff;
+				}
+				25% {
+					background-color: #fc3;
+				}
+				50% {
+					background-color: #3f9;
+				}
+				75% {
+					background-color: #c3f;
+				}
+				to {
+					background-color: #fff;
+				}
+			}
+
+			#pacman {
+				position: absolute;
+				height: 35px;
+				width: 50px;
+				text-indent: 250px;
+				white-space: nowrap;
+				overflow: hidden;
+				background-color: #000;
+				background: url('pacman.png') 0 0;
+				left: 200px;
+				top: 200px;
+			}
+			
+			.ball{
+				background: #ffd;
+				border-radius: 10px;
+				height: 10px;
+				width: 10px;
+				box-shadow: 1px 0px 5px #fff;
+				position: absolute;
+
+-webkit-animation-name: greenPulse;
+-webkit-animation-duration: 2s;
+-webkit-animation-iteration-count: infinite;
+			}
+
+			#stage{
+				border:dashed 5px #fff;
+-moz-border-radius: 5px;
+-webkit-border-radius: 5px;
+border-radius: 5px;
+				width: 600px;
+				height: 500px;
+				position: relative;
+				margin: 0 auto;
+				background: black;
+			}
+.up{
+    -moz-transform:rotate(-90deg); /* FF3.5+  */  
+    -webkit-transform:rotate(-90deg); /* Saf3.1+, Chrome */  
+    -o-transform:rotate(-90deg); /* Opera 10.5 */  
+    -ms-transform:rotate(-90deg); /* IE */  
+}
+.down{
+	-moz-transform:rotate(90deg); /* FF3.5+  */  
+    -webkit-transform:rotate(90deg); /* Saf3.1+, Chrome */  
+    -o-transform:rotate(90deg); /* Opera 10.5 */  
+    -ms-transform:rotate(90deg); /* IE */ 
+}
+.left{
+	-moz-transform:rotate(-180deg); /* FF3.5+  */  
+    -webkit-transform:rotate(-180deg); /* Saf3.1+, Chrome */  
+    -o-transform:rotate(-180deg); /* Opera 10.5 */  
+    -ms-transform:rotate(-180deg); /* IE */ 
+}
+.right{
+	-moz-transform:rotate(0deg); /* FF3.5+  */  
+    -webkit-transform:rotate(0deg); /* Saf3.1+, Chrome */  
+    -o-transform:rotate(0deg); /* Opera 10.5 */  
+    -ms-transform:rotate(0deg); /* IE */ 
+}
+
+@-webkit-keyframes greenPulse {
+from { background-color: #749a02; -webkit-box-shadow:: 0 0 9px #333; }
+50% { background-color: #91bd09; -webkit-box-shadow:: 0 0 18px #91bd09; }
+to { background-color: #749a02; -webkit-box-shadow:: 0 0 9px #333; }
+}
+
+#score{
+width: 100px;
+height: 50px;
+border: 1px solid red;
+color: red;
+}
+		</style>
+	</head> 
+	<body> 
+		<h1>pac man test</h1> 
+<div id="userPanel">
+<div id="score">0</div>
+</div>
+		<nav> 
+			<ul> 
+				<li id="source"><a href="assets/css/spinner-alt.css">asd</a></li> 
+			</ul> 
+		</nav> 
+
+<div id="stage">
+		
+</div>
+
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.js"></script>
+<script type="text/javascript">
+	var stageSelector = "#stage";
+	var Fruit = function(){
+		var ballRef = $('<div class="ball">&nbsp;</div>') ;
+		var x =  Math.floor(Math.random() * $(stageSelector).width());
+		var y =  Math.floor(Math.random() * $(stageSelector).height());
+		ballRef.appendTo("#stage").css({"left" : x , "top" : y})	;
+		setTimeout(function(){
+		}, 3000);
+	};
+
+	var Ghost = function(){
+		var elm = null;	
+		function init() {
+			elm = $(".ghost").appendTo(stageSelector);
+		}
+
+		
+	};
+
+	var PacMan = function(){
+		var elm = $("#pacman");
+		var fps = 250;
+		var moveTimer = null;
+		var currDirection = null;
+		var boundaries = { left : $("#stage").width() , top: $("#stage").height() };
+		var position = elm.position();
+		var movement = {};
+
+		function init(){
+			if($(elm).length === 0){
+				elm = $('<div id="pacman">&nbsp;</div>').appendTo("#stage");
+			}
+			setInterval(function(){
+				var currPosition = elm.css('background-position').match(/0px\s(\d+)px/)[1];
+				if(currPosition == 0 || currPosition == 105 ){
+					elm.css('background-position', "0 35px");
+				}else if (currPosition == 35){
+					elm.css('background-position', "0 70px");
+				}else{
+					elm.css('background-position', "0 105px");
+				}
+			},250);
+
+
+			$(document).keydown(function (e) {
+			  var keyCode = e.keyCode || e.which,
+				  arrow = {left: 37, up: 38, right: 39, down: 40 };
+			  switch (keyCode) {
+				case arrow.left:
+				  move("left");
+				break;
+				case arrow.up:
+				  move("up");
+				break;
+				case arrow.right:
+				  move("right");
+				break;
+				case arrow.down:
+				  move("down");
+				break;
+			  }
+			});
+
+			setInterval(update,150);
+
+		};
+
+		function update(){
+			var distance = 10 ;
+			position = elm.position();
+			var elmDimToCheck = parseInt(((movement.dimension === "top") ? elm.height() : elm.width()) + movement.value);
+			if( position[movement.dimension] + parseInt(movement.value + distance) + ( elmDimToCheck ) < boundaries[movement.dimension] &&
+				position[movement.dimension] + parseInt(movement.value + distance) + ( elmDimToCheck ) > 0 ){
+				elm.css(movement.dimension , movement.value + "=" + distance);
+			}
+			if(findIntersectors("#pacman",".ball").length > 0){
+				console.log("mangiaaa");
+				eat( findIntersectors("#pacman",".ball")[0] );
+			}
+		};
+
+		function move(direction){
+			elm[0].className = "";
+			elm.addClass(direction);
+			switch(direction){
+				case "up":
+					movement = { dimension: "top" , value: "-" };
+				break;
+				case "down":
+					movement = { dimension: "top" , value: "+" };
+				break;
+				case "left":
+					movement = { dimension: "left" , value: "-" };
+				break;
+				case "right":
+					movement = { dimension: "left" , value: "+" };
+				break;
+				
+			}
+		};
+
+		function eat(elmToEat){
+			$("#score").text( parseInt($("#score").text()) + 1 ) ;
+			$(elmToEat).remove();
+		}
+
+		function findIntersectors(targetSelector, intersectorsSelector) {
+			var intersectors = [];
+
+			var $target = $(targetSelector);
+			var tAxis = $target.offset();
+			var t_x = [tAxis.left, tAxis.left + $target.outerWidth()];
+			var t_y = [tAxis.top, tAxis.top + $target.outerHeight()];
+
+			$(intersectorsSelector).each(function() {
+				  var $this = $(this);
+				  var thisPos = $this.offset();
+				  var i_x = [thisPos.left, thisPos.left + $this.outerWidth()]
+				  var i_y = [thisPos.top, thisPos.top + $this.outerHeight()];
+
+				  if ( t_x[0] < i_x[1] && t_x[1] > i_x[0] &&
+					   t_y[0] < i_y[1] && t_y[1] > i_y[0]) {
+					  intersectors.push($this);
+				  }
+
+			});
+			return intersectors;
+		}
+
+		init();
+		return { move: move};
+	};
+
+
+	$(document).ready(function(){
+		var pm = new PacMan();
+		pm.move("up");
+		window.pm = pm;
+		setInterval(function(){
+			Fruit();
+		},2500);
+
+		
+	});
+
+
+</script>
+	</body> 
+</html>
